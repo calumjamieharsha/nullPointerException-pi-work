@@ -1,0 +1,16 @@
+Ideas for Raspberry Pi
+
+Available Sensors
+
+Joystick
+LED Matrix
+Temperature
+Pressure
+Humidity
+Pitch/Yaw/Roll
+Magnetometer
+
+
+Running Fi
+
+
