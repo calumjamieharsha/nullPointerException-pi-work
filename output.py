@@ -12,7 +12,7 @@ client = mqttClient.Client() #global client variable
 from time import sleep
 from signal import pause
 
-
+#connection to mqtt is here
 def connectClient():
     #client.username_pw_set(user, password=password)
     client.on_connect = on_connect
@@ -30,7 +30,7 @@ def on_message(client, userdata, message):
     if(message.topic == "TeamFitness/public/distance"):
         publicScores[1] = data
 
-shared_list =  [0,0]
+speedDistance =  [0,0]
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -41,7 +41,7 @@ def on_connect(client, userdata, flags, rc):
     else:
         print("Connection failed")
         
-#def getValues(in_queue, shared_list):
+#def getValues(in_queue, speedDistance):
 def getValues():
     sense = SenseHat()
 
@@ -54,7 +54,7 @@ def getValues():
         accelerometer_values = [acc['x'], acc['y'], acc['z']]
         kFilteringFactor = 0.6
         
-        global shared_list
+        global speedDistance
         
         gravity[0] = (accelerometer_values[0] * kFilteringFactor) + (gravity[0] * (1.0 - kFilteringFactor));
         gravity[1] = (accelerometer_values[1] * kFilteringFactor) + (gravity[1] * (1.0 - kFilteringFactor));
@@ -76,9 +76,9 @@ def getValues():
         
         publishValue("speed", speed)
         publishValue("distance", distance)
-        shared_list = [speed, distance]
+        speedDistance = [speed, distance]
         
-        #print("Speed, distance", shared_list)
+        #print("Speed, distance", speedDistance)
         sleep(0.5)
         
         
@@ -115,11 +115,11 @@ def writeWord(wrd):
     sense.show_message(str(wrd), scroll_speed=0.05, text_colour=users[posit[1]])
     
 def writeSteps():
-    sense.show_message(str(round(shared_list[0], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
+    sense.show_message(str(round(speedDistance[0], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
 
 def writeSpeed():
-    print(shared_list)
-    sense.show_message(str(round(shared_list[1], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
+    print(speedDistance)
+    sense.show_message(str(round(speedDistance[1], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
 
 def getPublicScoreDistance():
     writeWord(publicScores[1])
@@ -127,7 +127,7 @@ def getPublicScoreDistance():
 def displayText():
     writeWord("doing well!")
     
-
+## this contains the functions available to the diplay, each does something different eg display the speed
 infoFuncs = {0 : writeNum, 1 : writeSteps, 2 : writeSpeed, 3 : getPublicScoreDistance}
 
 #this bit does a thing
@@ -155,6 +155,8 @@ def pushed_down(event):
 def pushed_left(event):
     if event.action != ACTION_RELEASED:
         posit[1] = loop(posit[1] - 1, 0, len(users)-1)
+        
+    
 
 def pushed_right(event):
     if event.action != ACTION_RELEASED:
