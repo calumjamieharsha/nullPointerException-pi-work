@@ -22,17 +22,7 @@ def connectClient():
     client.subscribe([("TeamFitness/public/speed", 2)])
     client.subscribe([("TeamFitness/public/distance", 2)])
 
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("Connected to broker")
- 
-        global Connected                #Use global variable
-        Connected = True                #Signal connection 
-    else:
-        print("Connection failed")
-        
-connectClient()
-
+#attempt to recieve the public scores is here, needs work
 publicScores = [0,0]
 def on_message(client, userdata, message):
     print("msg")
@@ -42,6 +32,15 @@ def on_message(client, userdata, message):
 
 shared_list =  [0,0]
 
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to broker")
+ 
+        global Connected                #Use global variable
+        Connected = True                #Signal connection 
+    else:
+        print("Connection failed")
+        
 #def getValues(in_queue, shared_list):
 def getValues():
     sense = SenseHat()
@@ -176,6 +175,8 @@ sense.stick.direction_down = pushed_down
 sense.stick.direction_left = pushed_left
 sense.stick.direction_right = pushed_right
 sense.stick.direction_any = refresh
+
+connectClient()
 
 refresh()
 getValues()

@@ -14,8 +14,6 @@ distance = [0,0,0,0,0,0,0,0,0,0]
 client = mqttClient.Client()
 
 def main():
-
-    
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect(broker_address, port=port)
