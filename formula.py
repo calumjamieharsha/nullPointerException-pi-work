@@ -14,7 +14,7 @@ sense = SenseHat()
 P_SEALEVEL = 102400 #Pa
 
 
-p_current = sense.get_pressure()*100#*100 is to convert millibars to Pascals 
+p_current = sense.get_pressure()*100 #*100 is to convert millibars to Pascals 
 print (p_current)
 
 pressure = P_SEALEVEL/p_current

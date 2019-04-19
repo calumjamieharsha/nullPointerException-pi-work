@@ -2,22 +2,25 @@ from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
 import math
 
 import paho.mqtt.client as mqttClient
+#settings for mqtt connection
+
 Connected = False #global variable for the state of the connection
 broker_address= "10.42.12.200"
 port = 1883
-client = mqttClient.Client()
+client = mqttClient.Client() #global client variable
     
 from time import sleep
 from signal import pause
 
 
 def connectClient():
-
     #client.username_pw_set(user, password=password)
     client.on_connect = on_connect
     client.connect(broker_address, port=port)
-    
     client.loop_start()
+    
+    client.subscribe([("TeamFitness/public/speed", 2)])
+    client.subscribe([("TeamFitness/public/distance", 2)])
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -29,6 +32,13 @@ def on_connect(client, userdata, flags, rc):
         print("Connection failed")
         
 connectClient()
+
+publicScores = [0,0]
+def on_message(client, userdata, message):
+    print("msg")
+    data = json.loads(message.payload.decode())
+    if(message.topic == "TeamFitness/public/distance"):
+        publicScores[1] = data
 
 shared_list =  [0,0]
 
@@ -68,7 +78,8 @@ def getValues():
         publishValue("speed", speed)
         publishValue("distance", distance)
         shared_list = [speed, distance]
-        print("Speed, distance", shared_list)
+        
+        #print("Speed, distance", shared_list)
         sleep(0.5)
         
         
@@ -93,7 +104,7 @@ users = [[255,0,0],
         ]
 
 def publishValue(what, val):
-    client.publish("TeamFitness/player"+ str(posit[1]) +"/" + what, val, qos=2, retain = True)
+    client.publish("TeamFitness/player"+ str(posit[1]) +"/" + what, val, qos=2, retain = False)
 
 
 sense = SenseHat()
@@ -110,12 +121,15 @@ def writeSteps():
 def writeSpeed():
     print(shared_list)
     sense.show_message(str(round(shared_list[1], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
+
+def getPublicScoreDistance():
+    writeWord(publicScores[1])
     
 def displayText():
     writeWord("doing well!")
     
 
-infoFuncs = {0 : writeNum, 1 : writeSteps, 2 : writeSpeed}
+infoFuncs = {0 : writeNum, 1 : writeSteps, 2 : writeSpeed, 3 : getPublicScoreDistance}
 
 #this bit does a thing
 def displayInformation(n):
