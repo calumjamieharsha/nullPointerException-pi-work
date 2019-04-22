@@ -4,11 +4,11 @@ import json
 import bluetooth
 
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-port = 1
+portBT = 1
 
 
 
-server_sock.bind(("",port))
+server_sock.bind(("",portBT))
 server_sock.listen(1)
 client_sock,address = server_sock.accept()
 print("accepted connection from", address)

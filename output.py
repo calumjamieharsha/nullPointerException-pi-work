@@ -3,10 +3,10 @@ import math
 import bluetooth
 
 #BLUETOOTH SETUP
-bd_addr = "B8:27:EB:5C:66:39" #Jamie's Raspberry Pi
-port = 1
+bd_addr = "B8:27:EB:5C:66:39"#Jamie's Raspberry Pi #"B8:27:EB:98:DC:AB" #Harsha's Raspberry Pi
+portBT = 1
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect((bd_addr, port))
+sock.connect((bd_addr, portBT))
 temp = 100
 sock.send(str(temp))
 sock.close()
