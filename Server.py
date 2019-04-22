@@ -1,10 +1,27 @@
 import paho.mqtt.client as mqttClient
 import time
 import json
+import bluetooth
+
+server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+port = 1
+
+
+
+server_sock.bind(("",port))
+server_sock.listen(1)
+client_sock,address = server_sock.accept()
+print("accepted connection from", address)
+data = client_sock.recv(1024)
+print ("received[%s]" %data)
+client_sock.close()
+server_sock.close()
+
+
 
 Connected = False #global variable for the state of the connection
 broker_address= "10.42.12.200"
-port = 1883
+
 
 publicScore = [0,0]
 
