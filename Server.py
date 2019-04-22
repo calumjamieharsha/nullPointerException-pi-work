@@ -1,21 +1,21 @@
 import paho.mqtt.client as mqttClient
 import time
 import json
-import bluetooth
+import bluetooth #pip3
 
-server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-portBT = 1
+#server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+#portBT = 1
 
 
 
-server_sock.bind(("",portBT))
-server_sock.listen(1)
-client_sock,address = server_sock.accept()
-print("accepted connection from", address)
-data = client_sock.recv(1024)
-print ("received[%s]" %data)
-client_sock.close()
-server_sock.close()
+#server_sock.bind(("",portBT))
+#server_sock.listen(1)
+#client_sock,address = server_sock.accept()
+#print("accepted connection from", address)
+#data = client_sock.recv(1024)
+#print ("received[%s]" %data)
+#client_sock.close()
+#server_sock.close()
 
 
 

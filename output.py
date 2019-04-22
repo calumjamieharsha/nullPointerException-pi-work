@@ -1,28 +1,40 @@
+#Import
+
 from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
+from Adafruit_IO import Client, Data #import adafruit packages
+from formula import h #Calculate the users current height above sea level
+from time import sleep
+from signal import pause
 import math
-import bluetooth
+import paho.mqtt.client as mqttClient #settings for mqtt connection
 
-#BLUETOOTH SETUP
-bd_addr = "B8:27:EB:5C:66:39"#Jamie's Raspberry Pi #"B8:27:EB:98:DC:AB" #Harsha's Raspberry Pi
-portBT = 1
-sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect((bd_addr, portBT))
-temp = 100
-sock.send(str(temp))
-sock.close()
 
-import paho.mqtt.client as mqttClient
-#settings for mqtt connection
+#BLUETOOTH SETUP - Not used due to issues with handling data
+#import bluetooth
+#bd_addr = "B8:27:EB:98:DC:AB" #Harsha's Raspeberry
+#OR
+#db_addr = "B8:27:EB:5C:66:39" #Jamie's Raspberry Pi
+#portBT = 1
+#sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+#sock.connect((bd_addr, portBT))
+#temp = "hello"
+#sock.send(str(temp))
+#sock.close()
+
+username = "jcx200"
+activeKey = "35c34db0b54546c3943545e1ca94ffdf"
+
+aio = Client(username, activeKey)
+
 
 Connected = False #global variable for the state of the connection
 broker_address= "10.42.12.200"
 port = 1883
 client = mqttClient.Client() #global client variable
-    
-from time import sleep
-from signal import pause
 
-#connection to mqtt is here
+
+
+#Connect to MQTT
 def connectClient():
     #client.username_pw_set(user, password=password)
     client.on_connect = on_connect
@@ -84,9 +96,17 @@ def getValues():
         
         distance += speed
         
+        height = h #h is from formula file
+        
         publishValue("speed", speed)
+        io.create_data('speed', Data(value=speed))
+        
         publishValue("distance", distance)
+        io.create_data('distance', Data(value=distance))
         speedDistance = [speed, distance]
+        
+        publicValue("height", height)
+        io.create_data('height', Data(value=height))
         
         #print("Speed, distance", speedDistance)
         sleep(0.5)
@@ -130,6 +150,10 @@ def writeSteps():
 def writeSpeed():
     print(speedDistance)
     sense.show_message(str(round(speedDistance[1], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
+    
+def writeHeight():
+    print(height)
+    sense.show_message(str(height) scroll_speed=0.05, test_colour=users[posit[1]])
 
 def getPublicScoreDistance():
     writeWord(publicScores[1])
@@ -182,6 +206,7 @@ def refresh():
         sense.clear()
         displayInformation(posit[0])
         
+
 sense.stick.direction_up = pushed_up
 sense.stick.direction_down = pushed_down
 sense.stick.direction_left = pushed_left
