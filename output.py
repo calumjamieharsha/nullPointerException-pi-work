@@ -2,13 +2,14 @@
 
 from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
 from Adafruit_IO import Client, Data #import adafruit packages
-from formula import h #Calculate the users current height above sea level
+#from formula import h #Calculate the users current height above sea level
 from time import sleep
 from signal import pause
+from CPUTemp import temp_calc # gets temperature from CPU temp package
 import math
 import paho.mqtt.client as mqttClient #settings for mqtt connection
 
-
+sense = SenseHat()
 #BLUETOOTH SETUP - Not used due to issues with handling data
 #import bluetooth
 #bd_addr = "B8:27:EB:98:DC:AB" #Harsha's Raspeberry
@@ -96,23 +97,39 @@ def getValues():
         
         distance += speed
         
-        height = h #h is from formula file
+        
+        P_SEALEVEL = 102400 #Pa
+
+
+        p_current = sense.get_pressure()*100 #*100 is to convert millibars to Pascals 
+
+
+        pressure = P_SEALEVEL/p_current
+
+        temp = round(temp_calc,2)
+
+        numerator = ((pressure ** (1/5.257)) - 1) * (10 + 273.15)
+    
+        h = numerator/0.0065
+        h = round(h,2)
+        
+        
         
         publishValue("speed", speed)
-        io.create_data('speed', Data(value=speed))
+        aio.create_data('speed', Data(value=speed))
         
         publishValue("distance", distance)
-        io.create_data('distance', Data(value=distance))
+        aio.create_data('distance', Data(value=distance))
         speedDistance = [speed, distance]
         
-        publicValue("height", height)
-        io.create_data('height', Data(value=height))
+        publishValue("height", h)
+        aio.create_data('height', Data(value=h))
         
-        #print("Speed, distance", speedDistance)
+        print("Speed, distance", speedDistance)
         sleep(0.5)
         
         
-        #--------------------------- send to server code goes here
+
         
         
 
@@ -132,11 +149,13 @@ users = [[255,0,0],
          [122,255,122],
         ]
 
+
+
 def publishValue(what, val):
     client.publish("TeamFitness/player"+ str(posit[1]) +"/" + what, val, qos=2, retain = False)
 
 
-sense = SenseHat()
+
 
 def writeNum():
     sense.show_letter(str(posit[1])[0], text_colour=users[posit[1]])
@@ -152,8 +171,8 @@ def writeSpeed():
     sense.show_message(str(round(speedDistance[1], 2)), scroll_speed=0.05, text_colour=users[posit[1]])
     
 def writeHeight():
-    print(height)
-    sense.show_message(str(height) scroll_speed=0.05, test_colour=users[posit[1]])
+    print(h)
+    sense.show_message(str(h), scroll_speed=0.05, test_colour=users[posit[1]])
 
 def getPublicScoreDistance():
     writeWord(publicScores[1])
@@ -162,7 +181,7 @@ def displayText():
     writeWord("doing well!")
     
 ## this contains the functions available to the diplay, each does something different eg display the speed
-infoFuncs = {0 : writeNum, 1 : writeSteps, 2 : writeSpeed, 3 : getPublicScoreDistance}
+infoFuncs = {0 : writeNum, 1 : writeSteps, 2 : writeSpeed}
 
 #this bit does a thing
 def displayInformation(n):

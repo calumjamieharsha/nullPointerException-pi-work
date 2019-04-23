@@ -42,7 +42,6 @@ class CPUTemp:
 with CPUTemp() as cpu_temp:
     global c
     c = cpu_temp.get_temperature()
-    print("cpu temp %d"%c)
 
 # get the temperature from the Sense HAT temperatur sensors
 sense = SenseHat()
@@ -51,11 +50,11 @@ p = sense.get_temperature_from_pressure()
 h = sense.get_temperature_from_humidity()
 
 
-print("Average temp %d"%((p+h)/2))
+
 # factor = 3 appears to work if the RPi is in a case
 # change to factor = 5 appears to work for RPi's not in a case
 factor = 3
 
 temp_calc = ((p+h)/2) - (c/factor)
 # temp_calc is accurate to +/- 2 deg C.
-print("actual temp %d"%temp_calc)
+

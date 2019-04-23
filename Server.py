@@ -1,8 +1,9 @@
 import paho.mqtt.client as mqttClient
 import time
 import json
-import bluetooth #pip3
 
+#Unused due to issues handling data
+#import bluetooth
 #server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 #portBT = 1
 
@@ -21,6 +22,7 @@ import bluetooth #pip3
 
 Connected = False #global variable for the state of the connection
 broker_address= "10.42.12.200"
+port = 1883
 
 
 publicScore = [0,0]
@@ -48,6 +50,8 @@ def main():
         while True:
             publishArrAvg("distance", distance)
             time.sleep(0.5)
+            publishArrAvg("speed", speeds)
+            
  
     except KeyboardInterrupt:
         client.disconnect()
@@ -57,7 +61,7 @@ def publishArrAvg(topic, arr):
     avg = 0
     for val in arr:
         avg += val
-    print(avg)
+    print(topic +" %s" %avg)
     client.publish("TeamFitness/public/"+ topic, avg, qos=2, retain = True)
     
 def on_message(client, userdata, message):
@@ -69,6 +73,7 @@ def on_message(client, userdata, message):
     if(topic == "distance"):
         distance[player] = data
     if(topic == "speed"):
+        speeds[player] = data
         0==0 #replace later
     #print("Player " + str(player) + "'s " + topic + " is: " + str(data))
 

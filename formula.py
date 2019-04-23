@@ -14,27 +14,17 @@ sense = SenseHat()
 #Pressure at sea level - Value is assumed to be constant
 P_SEALEVEL = 102400 #Pa
 
-while True:
-    p_current = sense.get_pressure()*100 #*100 is to convert millibars to Pascals 
+
+p_current = sense.get_pressure()*100 #*100 is to convert millibars to Pascals 
 
 
-    pressure = P_SEALEVEL/p_current
+pressure = P_SEALEVEL/p_current
 
-    temp = round(temp_calc,2)
+temp = round(temp_calc,2)
 
-    numerator = ((pressure ** (1/5.257)) - 1) * (10 + 273.15)
+numerator = ((pressure ** (1/5.257)) - 1) * (10 + 273.15)
 
-    h = numerator/0.0065
-    h = round(h,2)
-    print(h)
-    
-    sleep(0.5)
-    
-    
-    
-    
-    
+h = numerator/0.0065
 h = round(h,2)
-
-print("height is %d" %h)
+    
 
